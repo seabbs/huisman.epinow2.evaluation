@@ -1,12 +1,13 @@
 ###########################################################
 ## generateSimulations.R
 ## author: J.S. Huisman
+## Adapted by Sam Abbott
 ###########################################################
 
 library(tidyverse)
 library(EpiEstim)
 
-appDir = "covid-19-re-shiny-app"
+appDir = "shiny-dailyRe"
 source(paste0(appDir, '/app/otherScripts/2_utils_getInfectionIncidence.R'))
 source(paste0(appDir, '/app/otherScripts/3_utils_doReEstimates.R'))
 

@@ -1,17 +1,19 @@
 ###########################################################
 ## interactiveSimulations.R
 ## author: J.S. Huisman
+## Adapted by: Sam Abbott
 ###########################################################
 
 library(tidyverse)
 library(lubridate)
 library(viridis)
+library(EpiNow2)
+library(data.table)
 
 plot_path = 'figures'
 
 source('code/generateSimulations.R')
 ###########################################################
-
 ###### Simulate observations and Estimate Re ######
 
 # 6 times, 3 plateaus; 10 times, 5 plateaus
@@ -31,6 +33,46 @@ estimatedInfections <- estimateInfectionTS(simulation, IncubationParams, OnsetTo
                                            timevarying = FALSE, n_boot = 100)
 
 estimatedRe <- estimateReTS(estimatedInfections, delay = 0)
+
+# Add EpiNow2 estimates ---------------------------------------------------
+
+# set up cores
+options(mc.cores = 4)
+
+# convert data into expected format
+obs <- as.data.table(simulation)
+obs <- obs[.(date, confirm = observations)]
+
+# estimate delays from gamma samples
+# EpiNow2 is designed to work with only lognormal delays currently 
+# so here we approximate lognormal distributions by sampling from the gamma distributions
+# defined above and then fitting a log normal 
+# This likely introduces a bias that could be removed by implementing gamma delays or changing 
+# the Huisman et al. code to work with log normals
+approximate_lognormal <- function(param_def) {
+  estimate_delay(rgamma(1000, shape =  param_def$shape, scale = param_def$scale),
+                 bootstraps = 1, bootstrap_samples = 1000, max_value = 30)
+}
+incubation_period <- approximate_lognormal(IncubationParams)
+reporting_delay <-  approximate_lognormal(OnsetToCountParams)
+
+# get generation time
+# defined as Gamma(shape 2.73, scale =1.39) in code/generateSimulations.R
+generation_time <- list(
+  mean = 
+  mean_sd = 0.01,
+  sd = 
+)
+# define delays in the format expected by EpNow2
+estimate_with_EpiNow2 <- function(...) {
+  estimate_infections(obs, generation_time = 
+                      delays = delay_opts(incubation_period, reporting_delay),
+                      horizon = 0, verbose = TRUE)
+}
+epinow2_Re_generative <- estimate_with_EpiNow2()
+epinow2_Re_deconvolution <- estimate_with_EpiNow2(rt = NULL)
+  
+
 
 ###### Rearrange data for plotting ######
 
