@@ -36,8 +36,10 @@ estimatedInfections <- estimateInfectionTS(simulation, IncubationParams, OnsetTo
 estimatedRe <- estimateReTS(estimatedInfections, delay = 0)
 
 # Add EpiNow2 estimates ---------------------------------------------------
-
 source("code/epinow2-interactive.R")
+
+# -------------------------------------------------------------------------
+
 ###### Rearrange data for plotting ######
 
 longSim <- simulation %>%

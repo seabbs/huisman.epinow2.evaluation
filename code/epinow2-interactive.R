@@ -4,6 +4,7 @@
 # Packages 
 library(EpiNow2)
 library(data.table)
+library(purrr)
 
 # Set up cores
 options(mc.cores = 4)
@@ -11,7 +12,6 @@ options(mc.cores = 4)
 # Convert data into expected format for EpiNow2
 simulated_cases <- as.data.table(simulation)
 simulated_cases <- simulated_cases[,.(date, confirm = observations)]
-
 
 # Add poisson noise 
 # Huisman et al simulation used above is deterministic outside of delays from
@@ -28,7 +28,7 @@ simulated_cases$confirm <- map_dbl(simulated_cases$confirm, ~ rpois(1, .))
 # the Huisman et al. code to work with log normals
 approximate_lognormal <- function(param_def) {
   estimate_delay(rgamma(1000, shape =  param_def$shape, scale = param_def$scale),
-                 bootstraps = 10, bootstrap_samples = 100, max_value = 30)
+                 bootstraps = 10, bootstrap_samples = 100, max_value = 15)
 }
 incubation_period <- approximate_lognormal(IncubationParams)
 reporting_delay <-  approximate_lognormal(OnsetToCountParams)
@@ -41,7 +41,7 @@ generation_time <- list(
   mean_sd = 0.01,
   sd = 2.3,
   sd_sd = 0.01,
-  max = 30
+  max = 15
 )
 
 # set defaults for EpiNow2
@@ -52,15 +52,12 @@ estimate_with_epinow2 <- function(...) {
   estimate_infections(reported_cases = simulated_cases, 
                       generation_time = generation_time,
                       delays = delay_opts(incubation_period, reporting_delay),
-                      stan = stan_opts(control = list(adapt_delta = 0.95), chains = 8,
-                                       save_warmup = TRUE),
+                      stan = stan_opts(control = list(adapt_delta = 0.95)),
                       obs = obs_opts(family = "poisson", week_effect = FALSE),
-                      horizon = 0, verbose = TRUE)
+                      horizon = 0, verbose = TRUE, ...)
 }
 # deconvolution approach that has a much faster run time but relatively poor real
-# time performance (comparable to other bayesian deconvolution approaches)
+# time performance (though comparable to other bayesian deconvolution approaches)
 epinow2_Re_deconvolution <- estimate_with_epinow2(rt = NULL)
-# generative approach that has a longer run time but better 
-# real time estimates
-epinow2_Re_generative <- estimate_with_epinow2(rt = rt_opts(prior = list(mean = 3, sd = 0.5), rw = 7),
-                                               gp = NULL)
+# generative approach that has a longer run time but better real time estimates
+epinow2_Re_generative <- estimate_with_epinow2(rt = rt_opts(prior = list(mean = 2.5, sd = 0.5)))
