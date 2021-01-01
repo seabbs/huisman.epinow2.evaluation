@@ -15,11 +15,11 @@ library(tidyverse)
 library(cowplot)
 library(viridis)
 
-simDir = '../simulations'
-plot_path = '../figures'
+simDir = 'simulations'
+plot_path = 'figures'
 
-source('generateSimulations.R')
-source('compareSimulations.R')
+source('code/generateSimulations.R')
+source('code/compareSimulations.R')
 
 ###########################################################
 getCountParams <- function(obs_type, misdelay = 0){
@@ -99,6 +99,7 @@ estimateGrid <- function(cond_grid){
   }
   
 }
+
 
 plotSimulations <- function(valid_cond_grid){
   for (row_id in 1:nrow(valid_cond_grid)){

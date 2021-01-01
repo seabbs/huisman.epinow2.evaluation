@@ -13,11 +13,12 @@ Encoding: UTF-8
 LazyData: true
 Imports:
   EpiNow2,
+  EpiEstim,
   data.table,
   tidyverse,
   lubridate,
   viridis,
-  EpiEstim
+  purrr
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.0
 Biarch: true
