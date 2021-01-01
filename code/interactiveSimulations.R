@@ -7,9 +7,9 @@ library(tidyverse)
 library(lubridate)
 library(viridis)
 
-plot_path = '../figures'
+plot_path = 'figures'
 
-source('generateSimulations.R')
+source('code/generateSimulations.R')
 ###########################################################
 
 ###### Simulate observations and Estimate Re ######

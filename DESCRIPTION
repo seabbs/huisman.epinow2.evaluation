@@ -1,0 +1,27 @@
+Package:  huisman.epinow2.validation
+Type: Package
+Title: Validation of EpiNow2 Using Huisman et al
+Version: 0.1.0
+Authors@R: c(
+  person(given = "Sam Abbott",
+         role = c("aut"),
+         email = "sam.abbott@lshtm.ac.uk",
+         comment = c(ORCID = "0000-0001-8057-8037")))
+Description:  Validation of EpiNow2 Using Huisman et al.
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
+Imports:
+  EpiNow2,
+  data.table,
+  tidyverse,
+  lubridate,
+  viridis,
+  EpiEstim
+Remotes:
+  epiforecasts/EpiNow2
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.1.0
+Biarch: true
+Depends: 
+  R (>= 3.4.0)
