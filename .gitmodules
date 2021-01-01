@@ -1,0 +1,3 @@
+[submodule "shiny-dailyRe"]
+	path = shiny-dailyRe
+	url = https://github.com/covid-19-Re/shiny-dailyRe
